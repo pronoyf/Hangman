@@ -1,107 +1,106 @@
-// Words to guess
-const words = ["javascript", "python", "java", "ruby", "swift", "kotlin", "html", "css", "react", "angular"];
+// List of words to guess
+const wordList = ["javascript", "python", "java", "ruby", "swift", "kotlin", "html", "css", "react", "angular"];
 
 // DOM elements
-const wordDisplay = document.getElementById('wordDisplay');
-const wrongLettersDisplay = document.getElementById('wrongLetters');
-const playButton = document.getElementById('playButton');
-const popup = document.getElementById('popup-container');
-const notification = document.getElementById('notification-container');
-const finalMessage = document.getElementById('finalMessage');
-const hangmanCanvas = document.getElementById('hangmanCanvas');
-const context = hangmanCanvas.getContext('2d');
+const wordElement = document.getElementById('wordDisplay');
+const wrongLettersElement = document.getElementById('wrongLetters');
+const playAgainButton = document.getElementById('playButton');
+const popupElement = document.getElementById('popup-container');
+const notificationElement = document.getElementById('notification-container');
+const messageElement = document.getElementById('finalMessage');
+const canvas = document.getElementById('hangmanCanvas');
+const ctx = canvas.getContext('2d');
 
 // Game variables
-let selectedWord = '';
-let correctLetters = [];
-let wrongLetters = [];
+let currentWord = '';
+let correctGuesses = [];
+let incorrectGuesses = [];
 
-// Initialize game
-function startGame() {
-    selectedWord = words[Math.floor(Math.random() * words.length)];
-    correctLetters = [];
-    wrongLetters = [];
-    displayWord();
-    updateWrongLetters();
-    popup.style.display = 'none';
-    drawHangman();
+// Initialize the game
+function initializeGame() {
+    currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+    correctGuesses = [];
+    incorrectGuesses = [];
+    renderWord();
+    updateIncorrectGuesses();
+    popupElement.style.display = 'none';
+    renderHangman();
 }
 
-// Display the word
-function displayWord() {
-    wordDisplay.innerHTML = selectedWord.split('').map(letter =>
-        `<span class="letter">${correctLetters.includes(letter) ? letter : '_ '}</span>`
+// Render the word with guessed letters
+function renderWord() {
+    wordElement.innerHTML = currentWord.split('').map(letter =>
+        `<span class="letter">${correctGuesses.includes(letter) ? letter : '_ '}</span>`
     ).join('');
 
-    const innerWord = wordDisplay.innerText.replace(/\n/g, '');
-    if (innerWord === selectedWord) {
-        finalMessage.innerText = 'Congratulations! You won!';
-        popup.style.display = 'flex';
+    const guessedWord = wordElement.innerText.replace(/\n/g, '');
+    if (guessedWord === currentWord) {
+        messageElement.innerText = 'Congratulations! You won!';
+        popupElement.style.display = 'flex';
     }
 }
 
-// Update wrong letters
-function updateWrongLetters() {
-    wrongLettersDisplay.innerHTML = wrongLetters.length > 0 ? '<p>Wrong</p>' : '';
-    wrongLettersDisplay.innerHTML += wrongLetters.map(letter => `<span>${letter}</span>`).join('');
-    drawHangman();
+// Update the display of incorrect guesses
+function updateIncorrectGuesses() {
+    wrongLettersElement.innerHTML = incorrectGuesses.length > 0 ? '<p>Wrong</p>' : '';
+    wrongLettersElement.innerHTML += incorrectGuesses.map(letter => `<span>${letter}</span>`).join('');
+    renderHangman();
 
-    if (wrongLetters.length === 10) {
-        finalMessage.innerText = `Unfortunately, you lost. The word was ${selectedWord}.`;
-        popup.style.display = 'flex';
+    if (incorrectGuesses.length === 10) {
+        messageElement.innerText = `Unfortunately, you lost. The word was ${currentWord}.`;
+        popupElement.style.display = 'flex';
     }
 }
 
-// Show notification
+// Show notification for duplicate guesses
 function showNotification() {
-    notification.classList.add('show');
+    notificationElement.classList.add('show');
     setTimeout(() => {
-        notification.classList.remove('show');
+        notificationElement.classList.remove('show');
     }, 2000);
 }
 
-// Draw the hangman
-function drawHangman() {
-    context.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
-    context.lineWidth = 2;
-    context.strokeStyle = '#000';
+// Render the hangman based on incorrect guesses
+function renderHangman() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000';
 
-    // Draw parts based on the number of wrong letters
-    const parts = [
-        () => { context.beginPath(); context.moveTo(10, 190); context.lineTo(190, 190); context.stroke(); }, // Base
-        () => { context.beginPath(); context.moveTo(30, 190); context.lineTo(30, 20); context.stroke(); }, // Left pillar
-        () => { context.beginPath(); context.moveTo(30, 20); context.lineTo(120, 20); context.stroke(); }, // Top beam
-        () => { context.beginPath(); context.moveTo(120, 20); context.lineTo(120, 50); context.stroke(); }, // Rope
-        () => { context.beginPath(); context.arc(120, 70, 20, 0, Math.PI * 2, true); context.stroke(); }, // Head
-        () => { context.beginPath(); context.moveTo(120, 90); context.lineTo(120, 140); context.stroke(); }, // Body
-        () => { context.beginPath(); context.moveTo(120, 100); context.lineTo(100, 120); context.stroke(); }, // Left arm
-        () => { context.beginPath(); context.moveTo(120, 100); context.lineTo(140, 120); context.stroke(); }, // Right arm
-        () => { context.beginPath(); context.moveTo(120, 140); context.lineTo(100, 170); context.stroke(); }, // Left leg
-        () => { context.beginPath(); context.moveTo(120, 140); context.lineTo(140, 170); context.stroke(); }  // Right leg
+    const hangmanParts = [
+        () => { ctx.beginPath(); ctx.moveTo(10, 190); ctx.lineTo(190, 190); ctx.stroke(); }, // Base
+        () => { ctx.beginPath(); ctx.moveTo(30, 190); ctx.lineTo(30, 20); ctx.stroke(); }, // Left pillar
+        () => { ctx.beginPath(); ctx.moveTo(30, 20); ctx.lineTo(120, 20); ctx.stroke(); }, // Top beam
+        () => { ctx.beginPath(); ctx.moveTo(120, 20); ctx.lineTo(120, 50); ctx.stroke(); }, // Rope
+        () => { ctx.beginPath(); ctx.arc(120, 70, 20, 0, Math.PI * 2, true); ctx.stroke(); }, // Head
+        () => { ctx.beginPath(); ctx.moveTo(120, 90); ctx.lineTo(120, 140); ctx.stroke(); }, // Body
+        () => { ctx.beginPath(); ctx.moveTo(120, 100); ctx.lineTo(100, 120); ctx.stroke(); }, // Left arm
+        () => { ctx.beginPath(); ctx.moveTo(120, 100); ctx.lineTo(140, 120); ctx.stroke(); }, // Right arm
+        () => { ctx.beginPath(); ctx.moveTo(120, 140); ctx.lineTo(100, 170); ctx.stroke(); }, // Left leg
+        () => { ctx.beginPath(); ctx.moveTo(120, 140); ctx.lineTo(140, 170); ctx.stroke(); }  // Right leg
     ];
 
-    for (let i = 0; i < wrongLetters.length; i++) {
-        parts[i]();
+    for (let i = 0; i < incorrectGuesses.length; i++) {
+        hangmanParts[i]();
     }
 }
 
-// Handle keydown events
-window.addEventListener('keydown', e => {
-    if (popup.style.display === 'flex') return;
+// Handle keydown events for letter guesses
+window.addEventListener('keydown', event => {
+    if (popupElement.style.display === 'flex') return;
 
-    if (e.key >= 'a' && e.key <= 'z') {
-        const letter = e.key;
-        if (selectedWord.includes(letter)) {
-            if (!correctLetters.includes(letter)) {
-                correctLetters.push(letter);
-                displayWord();
+    if (event.key >= 'a' && event.key <= 'z') {
+        const guessedLetter = event.key;
+        if (currentWord.includes(guessedLetter)) {
+            if (!correctGuesses.includes(guessedLetter)) {
+                correctGuesses.push(guessedLetter);
+                renderWord();
             } else {
                 showNotification();
             }
         } else {
-            if (!wrongLetters.includes(letter)) {
-                wrongLetters.push(letter);
-                updateWrongLetters();
+            if (!incorrectGuesses.includes(guessedLetter)) {
+                incorrectGuesses.push(guessedLetter);
+                updateIncorrectGuesses();
             } else {
                 showNotification();
             }
@@ -109,8 +108,8 @@ window.addEventListener('keydown', e => {
     }
 });
 
-// Play again button
-playButton.addEventListener('click', startGame);
+// Start a new game on play again button click
+playAgainButton.addEventListener('click', initializeGame);
 
-// Start the game on page load
-startGame();
+// Start the game when the page loads
+initializeGame();
