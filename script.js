@@ -46,7 +46,7 @@ function updateWrongLetters() {
     wrongLettersDisplay.innerHTML += wrongLetters.map(letter => `<span>${letter}</span>`).join('');
     drawHangman();
 
-    if (wrongLetters.length === 6) {
+    if (wrongLetters.length === 10) {
         finalMessage.innerText = `Unfortunately, you lost. The word was ${selectedWord}.`;
         popup.style.display = 'flex';
     }
